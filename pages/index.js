@@ -112,7 +112,8 @@ export default function Home() {
               value={jwebUrls}
               onChange={(e) => setJwebUrls(e.target.value)}
               placeholder='jWeb URLs go here'
-              h='550px'
+              h='500px'
+              _focus={{ borderColor: 'teal' }}
             />
             <Button colorScheme='teal' mt={2} onClick={clearTextAreas}>
               Clear Text Areas
@@ -123,7 +124,8 @@ export default function Home() {
               placeholder='elevate URLs go here'
               value={elevateUrls}
               onChange={(e) => setElevateUrls(e.target.value)}
-              h='550px'
+              h='500px'
+              _focus={{ borderColor: 'red' }}
             />
             <Button colorScheme='red' mt={2} onClick={handleInputChange}>
               Generate Redirects
@@ -137,7 +139,7 @@ export default function Home() {
               borderColor='gray.200'
               borderWidth={1}
               p={2}
-              h='550px'
+              h='500px'
               style={{ whiteSpace: 'pre-line' }}
             >
               {result.length > 0 ? (
