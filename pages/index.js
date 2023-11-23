@@ -31,7 +31,7 @@ const redirector = (jwebURLs, elevateUrls) => {
         const elevateSlug = elevateUrls[i].split('justia.site')[1]
         if (elevateSlug) {
           finalUrls.push(
-            `RewriteRule ^/?(amp/)?${jwebSlug}.html$ https://www.${domain}.${topLevelDomain}/$1${elevateSlug} [R=301,L]\n`
+            `RewriteRule ^/?(amp/)?${jwebSlug}.html$ https://www.${domain}.${topLevelDomain}/$1${elevateSlug} [R=301,L]`
           )
         }
       }
@@ -42,7 +42,7 @@ const redirector = (jwebURLs, elevateUrls) => {
     )
 
     // Join the array into a single string
-    return finalUrls.join('')
+    return finalUrls.join('\n')
   } catch (error) {
     console.error('Error in redirector function:', error.message)
     return 'Error generating redirects'
@@ -101,7 +101,7 @@ export default function Home() {
         <Text textAlign='center'>Lorem Ipsum Dolor sit Amet</Text>
         <Flex
           gap={6}
-          direction={['column', 'column', 'row']}
+          direction={['column', 'column', 'row', 'row', 'row', 'row']}
           p={8}
           justifyContent='space-between'
         >
@@ -137,11 +137,14 @@ export default function Home() {
               borderWidth={1}
               p={2}
               h='550px'
+              style={{ whiteSpace: 'pre-line' }}
             >
               {result.length > 0 ? (
                 result
               ) : (
-                <Text>redirects will appear here... hopefully</Text>
+                <Text color='gray.600'>
+                  redirects will appear here... hopefully
+                </Text>
               )}
             </Box>
             <CopyToClipboard
