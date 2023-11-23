@@ -13,6 +13,7 @@ import Layout from '@/components/layout/Layout'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useState } from 'react'
 import { useToast } from '@chakra-ui/react'
+import Instructions from '@/components/Instructions'
 
 const redirector = (jwebURLs, elevateUrls) => {
   try {
@@ -98,7 +99,7 @@ export default function Home() {
         <Center>
           <Heading>Redirector</Heading>
         </Center>
-        <Text textAlign='center'>Lorem Ipsum Dolor sit Amet</Text>
+        <Instructions />
         <Flex
           gap={6}
           direction={['column', 'column', 'row', 'row', 'row', 'row']}
