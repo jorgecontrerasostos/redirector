@@ -17,10 +17,6 @@ import Instructions from '@/components/Instructions'
 
 const redirector = (jwebURLs, elevateUrls) => {
   try {
-    if (jwebURLs.length !== elevateUrls.length) {
-      throw new Error('The number of urls must match')
-    }
-
     let finalUrls = []
     for (let i = 0; i < jwebURLs.length; i++) {
       const domain = jwebURLs[i].split('.')[1]
@@ -57,21 +53,27 @@ export default function Home() {
 
   const handleInputChange = () => {
     try {
-      if (jwebUrls.length === 0 || elevateUrls.length === 0) {
+      const jwebArray = jwebUrls.split('\n').filter((url) => url.trim() !== '')
+      const elevateArray = elevateUrls
+        .split('\n')
+        .filter((url) => url.trim() !== '')
+      if (jwebArray.length === 0 && elevateArray.length === 0) {
         toast({
           title: 'Oops',
           description: 'Please enter some URLs',
-          status: 'error',
-          duration: 5000,
+          status: 'warning',
+          duration: 3000,
           isClosable: true
         })
-      } else {
-        const jwebArray = jwebUrls
-          .split('\n')
-          .filter((url) => url.trim() !== '')
-        const elevateArray = elevateUrls
-          .split('\n')
-          .filter((url) => url.trim() !== '')
+      } else if (jwebArray.length !== elevateArray.length) {
+        toast({
+          title: 'Oops',
+          description: 'The number of urls must match',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        })
+      } else if (jwebArray.length == elevateArray.length) {
         const generatedResult = redirector(jwebArray, elevateArray)
         setResult(generatedResult)
       }
@@ -140,7 +142,8 @@ export default function Home() {
               borderWidth={1}
               p={2}
               h='500px'
-              style={{ whiteSpace: 'pre-line' }}
+              overflowY='scroll'
+              whiteSpace='pre-line'
             >
               {result.length > 0 ? (
                 result
@@ -155,8 +158,8 @@ export default function Home() {
               onCopy={() => {
                 toast({
                   title: 'Redirects Copied',
-                  status: 'info',
-                  duration: 5000,
+                  status: 'success',
+                  duration: 3000,
                   isClosable: true
                 })
               }}
