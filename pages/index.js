@@ -13,13 +13,15 @@ import Layout from '@/components/layout/Layout'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useState } from 'react'
 import { useToast } from '@chakra-ui/react'
+import { saveAs } from 'file-saver'
 import Instructions from '@/components/Instructions'
 
 const redirector = (jwebURLs, elevateUrls) => {
   try {
     let finalUrls = []
+    let domain = ''
     for (let i = 0; i < jwebURLs.length; i++) {
-      const domain = jwebURLs[i].split('.')[1]
+      domain = jwebURLs[i].split('.')[1]
       let topLevelDomain = jwebURLs[i].split('.')[2]
       topLevelDomain = topLevelDomain.split('/')[0]
       const jwebSlug = jwebURLs[i].split('.')[2].replace(topLevelDomain, '')
@@ -39,7 +41,7 @@ const redirector = (jwebURLs, elevateUrls) => {
     )
 
     // Join the array into a single string
-    return finalUrls.join('\n')
+    return finalUrls.join('\n', domain)
   } catch (error) {
     console.error('Error in redirector function:', error.message)
     return 'Error generating redirects'
@@ -50,6 +52,7 @@ export default function Home() {
   const [jwebUrls, setJwebUrls] = useState('')
   const [elevateUrls, setElevateUrls] = useState('')
   const [result, setResult] = useState('')
+  const [domain, setDomain] = useState('')
 
   const handleInputChange = () => {
     try {
@@ -74,6 +77,10 @@ export default function Home() {
           isClosable: true
         })
       } else if (jwebArray.length == elevateArray.length) {
+        const domainMatch = jwebArray[0].match(
+          /(?:https?:\/\/)?(?:www\.)?([^\/]+)/i
+        )
+        setDomain(domainMatch ? domainMatch[1] : '')
         const generatedResult = redirector(jwebArray, elevateArray)
         setResult(generatedResult)
       }
@@ -81,7 +88,39 @@ export default function Home() {
       setResult(`Error: ${error.message}`)
     }
   }
+  const downloadFile = () => {
+    try {
+      if (!domain) {
+        toast({
+          title: 'Oops',
+          description:
+            'Cannot determine domain. Please generate redirects first.',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true
+        })
+      } else {
+        const fileName = `${domain}_redirects.txt`
+        const blob = new Blob([result], { type: 'text/plain;charset=utf-8' })
+        saveAs(blob, fileName)
 
+        toast({
+          title: 'Redirects Downloaded',
+          status: 'success',
+          duration: 3000,
+          isClosable: true
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Oops',
+        description: `Error downloading redirects: ${error.message}`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+    }
+  }
   const clearTextAreas = () => {
     setJwebUrls('')
     setElevateUrls('')
@@ -153,21 +192,24 @@ export default function Home() {
                 </Text>
               )}
             </Box>
-            <CopyToClipboard
-              text={result}
-              onCopy={() => {
-                toast({
-                  title: 'Redirects Copied',
-                  status: 'success',
-                  duration: 3000,
-                  isClosable: true
-                })
-              }}
-            >
-              <Button colorScheme='blue' mt={2}>
-                Copy Redirects
-              </Button>
-            </CopyToClipboard>
+            <Flex alignItems='baseline' justifyContent='center' gap={4}>
+              <CopyToClipboard
+                text={result}
+                onCopy={() => {
+                  toast({
+                    title: 'Redirects Copied',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true
+                  })
+                }}
+              >
+                <Button colorScheme='blue' mt={2}>
+                  Copy Redirects
+                </Button>
+              </CopyToClipboard>
+              <Button onClick={downloadFile}>Download Redirects</Button>
+            </Flex>
           </VStack>
         </Flex>
       </Layout>
