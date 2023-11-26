@@ -112,6 +112,9 @@ export default function Home() {
       })
     }
   }
+  /**
+   * @description - Function that handles all input changes on the Text Areas
+   */
   const handleInputChange = () => {
     try {
       const jwebArray = jwebUrls.split('\n').filter((url) => url.trim() !== '')
