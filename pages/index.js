@@ -13,40 +13,9 @@ import Layout from '@/components/layout/Layout'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useState } from 'react'
 import { useToast } from '@chakra-ui/react'
-import { saveAs } from 'file-saver'
 import Instructions from '@/components/Instructions'
+import { saveAs } from 'file-saver'
 
-const redirector = (jwebURLs, elevateUrls) => {
-  try {
-    let finalUrls = []
-    let domain = ''
-    for (let i = 0; i < jwebURLs.length; i++) {
-      domain = jwebURLs[i].split('.')[1]
-      let topLevelDomain = jwebURLs[i].split('.')[2]
-      topLevelDomain = topLevelDomain.split('/')[0]
-      const jwebSlug = jwebURLs[i].split('.')[2].replace(topLevelDomain, '')
-
-      if (elevateUrls[i]) {
-        const elevateSlug = elevateUrls[i].split('justia.site')[1]
-        if (elevateSlug) {
-          finalUrls.push(
-            `RewriteRule ^/?(amp/)?${jwebSlug}.html$ https://www.${domain}.${topLevelDomain}/$1${elevateSlug} [R=301,L]`
-          )
-        }
-      }
-    }
-    // Use map to transform each URL individually
-    finalUrls = finalUrls.map((url) =>
-      url.replace('$1/', '$1').replace('?/', '?')
-    )
-
-    // Join the array into a single string
-    return finalUrls.join('\n', domain)
-  } catch (error) {
-    console.error('Error in redirector function:', error.message)
-    return 'Error generating redirects'
-  }
-}
 export default function Home() {
   const toast = useToast()
   const [jwebUrls, setJwebUrls] = useState('')
@@ -54,38 +23,35 @@ export default function Home() {
   const [result, setResult] = useState('')
   const [domain, setDomain] = useState('')
 
-  const handleInputChange = () => {
+  const redirector = (jwebURLs, elevateUrls) => {
     try {
-      const jwebArray = jwebUrls.split('\n').filter((url) => url.trim() !== '')
-      const elevateArray = elevateUrls
-        .split('\n')
-        .filter((url) => url.trim() !== '')
-      if (jwebArray.length === 0 && elevateArray.length === 0) {
-        toast({
-          title: 'Oops',
-          description: 'Please enter some URLs',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true
-        })
-      } else if (jwebArray.length !== elevateArray.length) {
-        toast({
-          title: 'Oops',
-          description: 'The number of urls must match',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        })
-      } else if (jwebArray.length == elevateArray.length) {
-        const domainMatch = jwebArray[0].match(
-          /(?:https?:\/\/)?(?:www\.)?([^\/]+)/i
-        )
-        setDomain(domainMatch ? domainMatch[1] : '')
-        const generatedResult = redirector(jwebArray, elevateArray)
-        setResult(generatedResult)
+      let finalUrls = []
+      let domain = ''
+      for (let i = 0; i < jwebURLs.length; i++) {
+        domain = jwebURLs[i].split('.')[1]
+        let topLevelDomain = jwebURLs[i].split('.')[2]
+        topLevelDomain = topLevelDomain.split('/')[0]
+        const jwebSlug = jwebURLs[i].split('.')[2].replace(topLevelDomain, '')
+
+        if (elevateUrls[i]) {
+          const elevateSlug = elevateUrls[i].split('justia.site')[1]
+          if (elevateSlug) {
+            finalUrls.push(
+              `RewriteRule ^/?(amp/)?${jwebSlug}.html$ https://www.${domain}.${topLevelDomain}/$1${elevateSlug} [R=301,L]`
+            )
+          }
+        }
       }
+      // Use map to transform each URL individually
+      finalUrls = finalUrls.map((url) =>
+        url.replace('$1/', '$1').replace('?/', '?')
+      )
+
+      // Join the array into a single string
+      return finalUrls.join('\n', domain)
     } catch (error) {
-      setResult(`Error: ${error.message}`)
+      console.error('Error in redirector function:', error.message)
+      return 'Error generating redirects'
     }
   }
   const downloadFile = () => {
@@ -121,6 +87,41 @@ export default function Home() {
       })
     }
   }
+  const handleInputChange = () => {
+    try {
+      const jwebArray = jwebUrls.split('\n').filter((url) => url.trim() !== '')
+      const elevateArray = elevateUrls
+        .split('\n')
+        .filter((url) => url.trim() !== '')
+      if (jwebArray.length === 0 && elevateArray.length === 0) {
+        toast({
+          title: 'Oops',
+          description: 'Please enter some URLs',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true
+        })
+      } else if (jwebArray.length !== elevateArray.length) {
+        toast({
+          title: 'Oops',
+          description: 'The number of urls must match',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        })
+      } else if (jwebArray.length == elevateArray.length) {
+        const domainMatch = jwebArray[0].match(
+          /(?:https?:\/\/)?(?:www\.)?([^\/]+)/i
+        )
+        setDomain(domainMatch ? domainMatch[1] : '')
+        const generatedResult = redirector(jwebArray, elevateArray)
+        setResult(generatedResult)
+      }
+    } catch (error) {
+      setResult(`Error: ${error.message}`)
+    }
+  }
+
   const clearTextAreas = () => {
     setJwebUrls('')
     setElevateUrls('')
