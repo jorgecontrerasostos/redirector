@@ -23,9 +23,16 @@ export default function Home() {
   const [result, setResult] = useState('')
   const [domain, setDomain] = useState('')
 
-  const redirector = (jwebURLs, elevateUrls) => {
+  /**
+   *
+   * @param {*} jwebURLs - Origin Jweb URLs
+   * @param {*} elevateURLs - Target Elevate URLs
+   * @returns - Final Redirects to be added to the new Elevate Website
+   * @description - Function to generate redirects from Jweb to Elevate
+   */
+  const redirector = (jwebURLs, elevateURLs) => {
     try {
-      let finalUrls = []
+      let finalRedirects = []
       let domain = ''
       for (let i = 0; i < jwebURLs.length; i++) {
         domain = jwebURLs[i].split('.')[1]
@@ -33,27 +40,30 @@ export default function Home() {
         topLevelDomain = topLevelDomain.split('/')[0]
         const jwebSlug = jwebURLs[i].split('.')[2].replace(topLevelDomain, '')
 
-        if (elevateUrls[i]) {
-          const elevateSlug = elevateUrls[i].split('justia.site')[1]
+        if (elevateURLs[i]) {
+          const elevateSlug = elevateURLs[i].split('justia.site')[1]
           if (elevateSlug) {
-            finalUrls.push(
+            finalRedirects.push(
               `RewriteRule ^/?(amp/)?${jwebSlug}.html$ https://www.${domain}.${topLevelDomain}/$1${elevateSlug} [R=301,L]`
             )
           }
         }
       }
-      // Use map to transform each URL individually
-      finalUrls = finalUrls.map((url) =>
+      // Replacing some bits of the redirect that come out wrong. May need to refactor this.
+      finalRedirects = finalRedirects.map((url) =>
         url.replace('$1/', '$1').replace('?/', '?')
       )
 
-      // Join the array into a single string
-      return finalUrls.join('\n', domain)
+      return finalRedirects.join('\n', domain)
     } catch (error) {
       console.error('Error in redirector function:', error.message)
       return 'Error generating redirects'
     }
   }
+  /**
+   *
+   * @description - Function that downloads the generated redirects to a text file.
+   */
   const downloadFile = () => {
     try {
       if (!domain) {
@@ -66,7 +76,22 @@ export default function Home() {
           isClosable: true
         })
       } else {
-        const fileName = `${domain}_redirects.txt`
+        // Creating a file name
+        const today = new Date()
+
+        //Adding the Date when the file was created to the file name.
+        const options = {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour12: false
+        }
+        const formatedDate = new Intl.DateTimeFormat('en-us', options)
+
+        // Creating the file name
+        const fileName = `${domain}-redirects_${formatedDate.format(today)}.txt`
+
+        // Creating the file content using Blob Class
         const blob = new Blob([result], { type: 'text/plain;charset=utf-8' })
         saveAs(blob, fileName)
 
@@ -121,7 +146,9 @@ export default function Home() {
       setResult(`Error: ${error.message}`)
     }
   }
-
+  /**
+   * @description - Function that clears the text areas.
+   */
   const clearTextAreas = () => {
     setJwebUrls('')
     setElevateUrls('')
