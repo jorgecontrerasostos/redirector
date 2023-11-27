@@ -174,7 +174,7 @@ export default function Home() {
         <Instructions />
         <Flex
           gap={6}
-          direction={['column', 'column', 'row', 'row', 'row', 'row']}
+          direction={['column', 'column', 'column', 'row', 'row', 'row']}
           p={8}
           justifyContent='space-between'
         >
