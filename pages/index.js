@@ -180,6 +180,7 @@ export default function Home() {
           direction={['column', 'column', 'column', 'row', 'row', 'row']}
           p={8}
           justifyContent='space-between'
+          as='main'
         >
           <VStack w='100%' h='100%'>
             {' '}
