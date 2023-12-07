@@ -26,10 +26,9 @@ const Instructions = () => {
             areas.
           </ListItem>
           <ListItem>
-            <ListIcon as={FaChevronCircleRight}>
-              2. Use the live jweb URL and the Elevate .site URL on their
-              corresponding text areas.
-            </ListIcon>
+            <ListIcon as={FaChevronCircleRight} />
+            2. Use the live jweb URL and the Elevate .site URL on their
+            corresponding text areas.
           </ListItem>
           <ListItem>
             <ListIcon as={FaChevronCircleRight} color='black.500' />
