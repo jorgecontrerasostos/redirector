@@ -51,7 +51,7 @@ const Instructions = () => {
           </ListItem>
         </List>
         <Text as='small'>
-          Please not the tool does <strong>NOT</strong> support subdomain URLs
+          Please note the tool does <strong>NOT</strong> support subdomain URLs
           just yet.
         </Text>
       </Container>
