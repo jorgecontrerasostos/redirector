@@ -3,8 +3,7 @@ import {
   List,
   ListItem,
   ListIcon,
-  OrderedList,
-  UnorderedList,
+  Text,
   Heading,
   Box,
   Container,
@@ -27,13 +26,19 @@ const Instructions = () => {
             areas.
           </ListItem>
           <ListItem>
+            <ListIcon as={FaChevronCircleRight}>
+              2. Use the live jweb URL and the Elevate .site URL on their
+              corresponding text areas.
+            </ListIcon>
+          </ListItem>
+          <ListItem>
             <ListIcon as={FaChevronCircleRight} color='black.500' />
-            2. Make sure that the same amount of jwebURLs and elevateURLs is
+            3. Make sure that the same amount of jwebURLs and elevateURLs is
             inserted into both text areas.
           </ListItem>
           <ListItem>
             <ListIcon as={FaChevronCircleRight} color='black.500' />
-            3. If you encounter any bug, please report it or create a github
+            4. If you encounter any bug, please report it or create a github
             issue{' '}
             <Link
               href='https://github.com/jorgecontrerasostos/redirector'
@@ -46,6 +51,10 @@ const Instructions = () => {
             .
           </ListItem>
         </List>
+        <Text as='small'>
+          Please not the tool does <strong>NOT</strong> support subdomain URLs
+          just yet.
+        </Text>
       </Container>
     </Box>
   )
